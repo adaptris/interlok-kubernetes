@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, MessageMetricsListener {
 
+  private static final String PROMETHEUS_JOB_NAME = "Interlok";
+
   private static final String IMPLEMENTATION_NAME = PrometheusMetricsAdapter.class.getSimpleName(); 
   
   private static final String PROMETHEUS_ENDPOINT_KEY = "prometheusEndpointUrl";
@@ -131,7 +133,7 @@ public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, Messa
         log.trace("Pushing metric '{}' with value '{}' to Prometheus.", statistic.getStatisticId().replace("-", ""), messagesPerSecond);
         
         try {
-          this.getPushGateway().pushAdd(registry, "Messages Per Second");
+          this.getPushGateway().pushAdd(registry, PROMETHEUS_JOB_NAME);
         } catch (IOException e) {
           log.warn("Could not push to Prometheus.", e);
         }
