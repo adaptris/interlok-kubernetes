@@ -82,7 +82,7 @@ dependencies {
   compile  ("com.adaptris:interlok-core:$interlokCoreVersion") { changing= true}
   compile  ("com.adaptris:interlok-common:$interlokCoreVersion") { changing= true}
   
-  compile  ("com.adaptris:interlok-kubernetes-metrics:3.9.0") { changing= true}
+  compile  ("com.adaptris:interlok-kubernetes-metrics:$interlokCoreVersion") { changing= true}
   
   compile ("io.prometheus:simpleclient:$prometheusVersion")
   compile ("io.prometheus:simpleclient_hotspot:$prometheusVersion")
