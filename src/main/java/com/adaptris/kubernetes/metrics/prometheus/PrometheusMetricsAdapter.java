@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, MessageMetricsListener {
 
-  private static final String PROMETHEUS_JOB_NAME = "Interlok";
+  private static final String PROMETHEUS_JOB_NAME = "interlok";
   
   private static final String INTERLOK_NAMESPACE = "interlok";
 
