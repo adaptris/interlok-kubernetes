@@ -23,12 +23,16 @@ import lombok.extern.slf4j.Slf4j;
 public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, MessageMetricsListener {
 
   private static final String PROMETHEUS_JOB_NAME = "Interlok";
+  
+  private static final String INTERLOK_NAMESPACE = "interlok";
 
   private static final String IMPLEMENTATION_NAME = PrometheusMetricsAdapter.class.getSimpleName(); 
   
   private static final String PROMETHEUS_ENDPOINT_KEY = "prometheusEndpointUrl";
   
   private static final Integer METRICS_COLLECTOR_INTERVAL_SECONDS_DEFAULT = 10;
+
+  private static final String INTERLOK_LABELS = "interlok";
   
   @Getter
   @Setter
@@ -122,8 +126,10 @@ public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, Messa
       Counter msgPerSecondCounter = 
           Counter
           .build()
+          .namespace(INTERLOK_NAMESPACE)
+          .labelNames(INTERLOK_LABELS)
           .name(statistic.getStatisticId().replace("-", ""))
-          .help("Messages per second for the workflow interceptor named " + statistic.getStatisticId().replace("-", ""))
+          .help("Number of messages processed for the workflow interceptor named " + statistic.getStatisticId().replace("-", ""))
           .register(registry);
       
       long messagesPerSecond = MessagesPerSecondCalculator.calculateMessagesPerSecond(METRICS_COLLECTOR_INTERVAL_SECONDS_DEFAULT, statistic);
