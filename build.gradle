@@ -77,8 +77,8 @@ dependencies {
   
   annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") {changing= true}
 
-  testCompile  ('org.junit.jupiter:junit-jupiter-api:5.4.2')
-  testCompile  ('org.junit.jupiter:junit-jupiter:5.4.2')
+  testCompile  ("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+  testCompile  ("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
   
   testCompile  ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
   
