@@ -9,7 +9,7 @@ import com.adaptris.core.interceptor.MessageStatistic;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MessagesPerSecondCalculator {
+public class MessagesPerSecondCalculator implements MetricsCalculator {
   
   private static final int MAX_KEYS = 1000;
 
@@ -23,7 +23,7 @@ public class MessagesPerSecondCalculator {
    * @param statistics
    * @return
    */
-  public static long calculateMessagesPerSecond(long calculateForTheLastNumberOfSeconds, MessageStatisticExtended statistic) {
+  public long calculateMessagesPerSecond(long calculateForTheLastNumberOfSeconds, MessageStatisticExtended statistic) {
     long result = -1;
     
     long now = System.currentTimeMillis();

@@ -1,13 +1,17 @@
 package com.adaptris.kubernetes.metrics.prometheus;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.mgmt.kubernetes.metrics.KubernetesMetricsAdapter;
@@ -28,6 +32,18 @@ public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, Messa
   
   private static final String PROMETHEUS_ENDPOINT_KEY = "prometheusEndpointUrl";
   
+  private static final String K8S_POD_NAME_LABEL_KEY = "k8s_pod_name";
+  
+  private static final String K8S_POD_NAME_ENV = "K8S_POD_NAME";
+  
+  private static final String K8S_POD_NAME_DEFAULT = "interlok";
+  
+  private static final String K8S_NAMESPACE_LABEL_KEY = "k8s_namespace";
+  
+  private static final String K8S_NAMESPACE_ENV = "K8S_NAMESPACE";
+  
+  private static final String K8S_NAMESPACE_DEFAULT = "default";
+  
   private static final Integer METRICS_COLLECTOR_INTERVAL_SECONDS_DEFAULT = 10;
   
   @Getter
@@ -46,6 +62,14 @@ public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, Messa
   @Setter
   private Integer collectorIntervalSeconds;
   
+  @Getter
+  @Setter
+  private Map<String, String> metricLabels;
+  
+  @Getter
+  @Setter
+  private MetricsCalculator calculator;
+  
   private ScheduledExecutorService scheduler;
   private ScheduledFuture<?> schedulerHandle;
   
@@ -53,10 +77,16 @@ public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, Messa
     MessageMetricsCollector metricsCollector = new JmxMessageMetricsCollector();
     metricsCollector.registerListener(this);
     this.setMessageMetricsCollector(metricsCollector);
+    this.setMetricLabels(new HashMap<>());
+    this.setCalculator(new MessagesPerSecondCalculator());
+    this.setBootstrapProperties(new Properties());
   }
   
   @Override
   public void init() throws CoreException {
+    this.getMetricLabels().put(K8S_NAMESPACE_LABEL_KEY, this.loadProperty(K8S_NAMESPACE_ENV, K8S_NAMESPACE_DEFAULT));
+    this.getMetricLabels().put(K8S_POD_NAME_LABEL_KEY, this.loadProperty(K8S_POD_NAME_ENV, K8S_POD_NAME_DEFAULT));
+    
     this.getMessageMetricsCollector().prepare();
     if(this.getPushGateway() == null) {
       if(this.getPrometheusEndpoint() != null)
@@ -103,7 +133,7 @@ public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, Messa
   }
   
   private String getPrometheusEndpoint() {
-    if(System.getProperty(PROMETHEUS_ENDPOINT_KEY) != null)
+    if(!StringUtils.isEmpty(System.getProperty(PROMETHEUS_ENDPOINT_KEY)))
       return System.getProperty(PROMETHEUS_ENDPOINT_KEY);
     if(this.getBootstrapProperties().getProperty(PROMETHEUS_ENDPOINT_KEY) != null)
       return this.getBootstrapProperties().getProperty(PROMETHEUS_ENDPOINT_KEY);
@@ -126,19 +156,25 @@ public class PrometheusMetricsAdapter implements KubernetesMetricsAdapter, Messa
           .help("Number of messages processed for the workflow interceptor named " + statistic.getStatisticId().replace("-", ""))
           .register(registry);
       
-      long messagesPerSecond = MessagesPerSecondCalculator.calculateMessagesPerSecond(METRICS_COLLECTOR_INTERVAL_SECONDS_DEFAULT, statistic);
+      long messagesPerSecond = this.getCalculator().calculateMessagesPerSecond(METRICS_COLLECTOR_INTERVAL_SECONDS_DEFAULT, statistic);
       if(messagesPerSecond >= 0) {
         msgPerSecondCounter.inc(messagesPerSecond);
       
         log.trace("Pushing metric '{}' with value '{}' to Prometheus.", statistic.getStatisticId().replace("-", ""), messagesPerSecond);
         
         try {
-          this.getPushGateway().pushAdd(registry, PROMETHEUS_JOB_NAME);
+          this.getPushGateway().pushAdd(registry, PROMETHEUS_JOB_NAME, this.getMetricLabels());
         } catch (IOException e) {
           log.warn("Could not push to Prometheus.", e);
         }
       }
     });
+  }
+  
+  private String loadProperty(String propertyName, String defaultValue) {
+    String returnValue = StringUtils.defaultIfEmpty(System.getenv(propertyName), StringUtils.defaultIfEmpty(System.getProperty(propertyName), defaultValue));
+    log.debug("Evaluating system property '{}' to value '{}'", propertyName, returnValue);
+    return returnValue;
   }
   
 }
