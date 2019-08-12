@@ -1,1 +1,3 @@
-rootProject.name = 'interlok-kubernetes-metrics'
+rootProject.name = 'interlok-k8s'
+include 'interlok-k8s-metrics'
+include 'interlok-k8s-prometheus'
