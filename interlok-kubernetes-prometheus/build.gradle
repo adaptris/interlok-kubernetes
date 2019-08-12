@@ -3,7 +3,7 @@ ext {
 }
 
 dependencies {
-  compile project(':interlok-k8s-metrics')
+  compile project(':interlok-kubernetes-metrics')
 
   compile ("io.prometheus:simpleclient:$prometheusVersion")
   compile ("io.prometheus:simpleclient_hotspot:$prometheusVersion")
