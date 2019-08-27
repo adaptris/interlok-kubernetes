@@ -1,0 +1,61 @@
+ext {
+  componentName='Interlok/Kubernetes Metrics'
+}
+
+
+jar {
+  manifest {
+    attributes("Built-By": System.getProperty('user.name'),
+               "Build-Jdk": System.getProperty('java.version'),
+               "Implementation-Title": componentName,
+               "Implementation-Version": project.version,
+               "Implementation-Vendor-Id": project.group,
+               "Implementation-Vendor": organizationName)
+  }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+artifacts {
+  archives javadocJar
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+
+      artifact javadocJar { classifier "javadoc" }
+
+      pom.withXml {
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", "Management component for exposing metrics to Kuberenetes.")
+        asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/advanced-kubernetes-metrics.html")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.9.1+")
+        properties.appendNode("license", "false")
+        properties.appendNode("tags", "kubernetes,metrics,management")
+      }
+    }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
+    }
+  }
+}
+
+
+task deleteGeneratedFiles(type: Delete) {
+  delete 'activemq-data'
+  delete 'data'
+}
+
+clean.dependsOn deleteGeneratedFiles

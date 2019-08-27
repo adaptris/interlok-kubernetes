@@ -1,0 +1,90 @@
+ext {
+  componentName='Interlok/Kubernetes Auto-Scaling'
+}
+
+dependencies {
+  compile project(':interlok-kubernetes-metrics')
+
+  compile ("io.prometheus:simpleclient:$prometheusVersion")
+  compile ("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+  compile ("io.prometheus:simpleclient_httpserver:$prometheusVersion")
+  compile ("io.prometheus:simpleclient_pushgateway:$prometheusVersion")
+  
+}
+
+jar {
+  manifest {
+    attributes("Built-By": System.getProperty('user.name'),
+               "Build-Jdk": System.getProperty('java.version'),
+               "Implementation-Title": componentName,
+               "Implementation-Version": project.version,
+               "Implementation-Vendor-Id": project.group,
+               "Implementation-Vendor": organizationName)
+  }
+}
+
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+artifacts {
+  archives javadocJar
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+
+      artifact javadocJar { classifier "javadoc" }
+
+      pom.withXml {
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", "Management component for exposing metrics to Prometheus in Kuberenetes.")
+        asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/advanced-kubernetes-metrics.html")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.9.1+")
+        properties.appendNode("license", "false")
+        properties.appendNode("tags", "prometheus,kubernetes,metrics,management")
+      }
+    }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
+    }
+  }
+}
+
+spotbugs {
+  // showProgress = "true"
+  effort = "max"
+  // Ignore failures?
+  // ignoreFailures = false
+
+  // We only care about "high priority" issues...
+  reportLevel = "high"
+}
+
+// disable spotbugsTests which checks our test code..
+spotbugsTest.enabled = false
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+  reports {
+    xml.enabled = false
+    html.enabled = true
+  }
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete 'activemq-data'
+  delete 'data'
+}
+
+clean.dependsOn deleteGeneratedFiles

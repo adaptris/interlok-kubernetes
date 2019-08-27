@@ -1,0 +1,3 @@
+rootProject.name = 'interlok-kubernetes'
+include 'interlok-kubernetes-metrics'
+include 'interlok-kubernetes-prometheus'
