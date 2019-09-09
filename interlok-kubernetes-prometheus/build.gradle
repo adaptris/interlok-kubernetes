@@ -43,7 +43,7 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", "Management component for exposing metrics to Prometheus in Kuberenetes.")
-        asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/advanced-kubernetes-metrics.html")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/advanced-interlok-scaling.html")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.9.1+")
         properties.appendNode("license", "false")
