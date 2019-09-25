@@ -76,7 +76,7 @@ public class PrometheusMetricsAdapterTest {
 
     Object value = field.get(adapter.getPushGateway());
     
-    assertEquals("http://localhost:9090/metrics/job/", value);
+    assertEquals("http://localhost:9090/metrics/", value);
   }
   
   @Test
@@ -95,7 +95,7 @@ public class PrometheusMetricsAdapterTest {
 
     Object value = field.get(adapter.getPushGateway());
     
-    assertEquals("http://localhost:9095/metrics/job/", value);
+    assertEquals("http://localhost:9095/metrics/", value);
   }
   
   @Test
