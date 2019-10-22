@@ -2,7 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
   id 'com.github.spotbugs' version '2.0.0' apply false
-  id "io.freefair.lombok" version "3.8.4" apply false
+  id "io.freefair.lombok" version "4.1.2" apply false
 }
 
 ext {
@@ -20,11 +20,11 @@ ext {
   interlokCommonJavadocs= project.hasProperty('interlokCommonJavadocs') ? project.getProperty('interlokCommonJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
-  slf4jVersion = '1.7.27'
+  slf4jVersion = '1.7.28'
   log4j2Version="2.12.1"
-  junitJupiterVersion = '5.5.1'
+  junitJupiterVersion = '5.5.2'
   jGroupsVersion = '4.0.16.Final'
-  prometheusVersion = '0.6.0'
+  prometheusVersion = '0.7.0'
 
 }
 
