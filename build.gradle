@@ -45,6 +45,24 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
   }
 }
+ext.gitBranchNameOrTimestamp = { branchName ->
+  if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
+    return new Date().format('HH:mm:ss z');
+  }
+  return branchName;
+}
+
+ext.buildInfo = { ->
+   new ByteArrayOutputStream().withStream { os ->
+      exec {
+        executable = "git"
+        args = ["rev-parse", "--abbrev-ref", "HEAD"]
+        standardOutput = os
+      }
+      def branchName = os.toString().replaceAll("\r", "").replaceAll("\n", "").trim();
+      return gitBranchNameOrTimestamp(branchName);
+    }
+}
 
 task clean(type: Delete) {
   delete project.buildDir
@@ -57,7 +75,7 @@ subprojects {
   apply plugin: "jacoco"
   apply plugin: "io.freefair.lombok"
   apply plugin: 'com.github.spotbugs'
-  
+
   sourceCompatibility = 1.8
   group   = 'com.adaptris'
   version = releaseVersion
@@ -99,7 +117,7 @@ subprojects {
     compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
     annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-  
+
     testCompile  ("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testCompile  ("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testCompile  ("org.mockito:mockito-all:1.10.19")
@@ -110,7 +128,7 @@ subprojects {
     testCompile ("org.apache.logging.log4j:log4j-core:${log4j2Version}")
     testCompile ("org.apache.logging.log4j:log4j-1.2-api:${log4j2Version}")
     testCompile ("org.apache.logging.log4j:log4j-api:${log4j2Version}")
-  
+
     javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
     umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
 
@@ -163,6 +181,7 @@ subprojects {
         entry(key: 'groupId', value: project.group)
         entry(key: 'artifactId', value: project.name)
         entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
+        entry(key: 'build.info', value: buildInfo())
       }
     }
   }
