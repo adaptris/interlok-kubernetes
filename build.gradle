@@ -24,7 +24,7 @@ ext {
   log4j2Version="2.12.1"
   junitJupiterVersion = '5.5.2'
   jGroupsVersion = '4.0.16.Final'
-  prometheusVersion = '0.7.0'
+  prometheusVersion = '0.8.0'
 
 }
 
