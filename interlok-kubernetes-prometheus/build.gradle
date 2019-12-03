@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok/Kubernetes Auto-Scaling'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 dependencies {
@@ -88,9 +89,16 @@ tasks.withType(com.github.spotbugs.SpotBugsTask) {
   }
 }
 
+
+
 task deleteGeneratedFiles(type: Delete) {
   delete 'activemq-data'
   delete 'data'
+  delete delombokTargetDir
+}
+
+delombok {
+  target = delombokTargetDir
 }
 
 clean.dependsOn deleteGeneratedFiles

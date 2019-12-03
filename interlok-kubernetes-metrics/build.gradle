@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok/Kubernetes Metrics'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 
@@ -62,6 +63,11 @@ publishing {
 task deleteGeneratedFiles(type: Delete) {
   delete 'activemq-data'
   delete 'data'
+  delete delombokTargetDir
+}
+
+delombok {
+  target = delombokTargetDir
 }
 
 clean.dependsOn deleteGeneratedFiles
