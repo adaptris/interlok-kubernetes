@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok/Kubernetes Metrics'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 
@@ -19,6 +20,11 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.extensions.delombokTask
+}
+
 artifacts {
   archives javadocJar
 }
@@ -29,6 +35,7 @@ publishing {
       from components.java
 
       artifact javadocJar { classifier "javadoc" }
+      artifact sourcesJar { classifier "sources" }
 
       pom.withXml {
         asNode().appendNode("name", componentName)
@@ -56,6 +63,11 @@ publishing {
 task deleteGeneratedFiles(type: Delete) {
   delete 'activemq-data'
   delete 'data'
+  delete delombokTargetDir
+}
+
+delombok {
+  target = delombokTargetDir
 }
 
 clean.dependsOn deleteGeneratedFiles

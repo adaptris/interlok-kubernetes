@@ -1,8 +1,8 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '2.0.0' apply false
-  id "io.freefair.lombok" version "4.1.2" apply false
+  id 'com.github.spotbugs' version '3.0.0' apply false
+  id "io.freefair.lombok" version "4.1.6" apply false
 }
 
 ext {
@@ -20,7 +20,7 @@ ext {
   interlokCommonJavadocs= project.hasProperty('interlokCommonJavadocs') ? project.getProperty('interlokCommonJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
-  slf4jVersion = '1.7.28'
+  slf4jVersion = '1.7.29'
   log4j2Version="2.12.1"
   junitJupiterVersion = '5.5.2'
   jGroupsVersion = '4.0.16.Final'
@@ -45,6 +45,24 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
   }
 }
+ext.gitBranchNameOrTimestamp = { branchName ->
+  if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
+    return new Date().format('HH:mm:ss z');
+  }
+  return branchName;
+}
+
+ext.buildInfo = { ->
+   new ByteArrayOutputStream().withStream { os ->
+      exec {
+        executable = "git"
+        args = ["rev-parse", "--abbrev-ref", "HEAD"]
+        standardOutput = os
+      }
+      def branchName = os.toString().replaceAll("\r", "").replaceAll("\n", "").trim();
+      return gitBranchNameOrTimestamp(branchName);
+    }
+}
 
 task clean(type: Delete) {
   delete project.buildDir
@@ -57,7 +75,7 @@ subprojects {
   apply plugin: "jacoco"
   apply plugin: "io.freefair.lombok"
   apply plugin: 'com.github.spotbugs'
-  
+
   sourceCompatibility = 1.8
   group   = 'com.adaptris'
   version = releaseVersion
@@ -99,7 +117,7 @@ subprojects {
     compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
     annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-  
+
     testCompile  ("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testCompile  ("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testCompile  ("org.mockito:mockito-all:1.10.19")
@@ -110,7 +128,7 @@ subprojects {
     testCompile ("org.apache.logging.log4j:log4j-core:${log4j2Version}")
     testCompile ("org.apache.logging.log4j:log4j-1.2-api:${log4j2Version}")
     testCompile ("org.apache.logging.log4j:log4j-api:${log4j2Version}")
-  
+
     javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
     umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
 
@@ -133,10 +151,6 @@ subprojects {
 
   test {
     useJUnitPlatform()
-  }
-
-  jacoco {
-    toolVersion="0.8.3"
   }
 
   jacocoTestReport {
@@ -163,6 +177,7 @@ subprojects {
         entry(key: 'groupId', value: project.group)
         entry(key: 'artifactId', value: project.name)
         entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
+        entry(key: 'build.info', value: buildInfo())
       }
     }
   }
@@ -235,6 +250,15 @@ subprojects {
       xml.enabled = false
       html.enabled = true
     }
+  }
+
+  task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
+    group 'Build'
+    description 'Compile for lgtm'
+
+    source = sourceSets.main.extensions.delombokTask
+    destinationDir = sourceSets.main.java.outputDir
+    classpath = project.sourceSets.main.compileClasspath
   }
 
   check.dependsOn jacocoTestReport
