@@ -22,7 +22,7 @@ ext {
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.30'
   log4j2Version="2.13.0"
-  junitJupiterVersion = '5.5.2'
+  junitJupiterVersion = '5.6.0'
   jGroupsVersion = '4.0.16.Final'
   prometheusVersion = '0.7.0'
 
