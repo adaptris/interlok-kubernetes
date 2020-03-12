@@ -69,28 +69,6 @@ publishing {
   }
 }
 
-spotbugs {
-  // showProgress = "true"
-  effort = "max"
-  // Ignore failures?
-  // ignoreFailures = false
-
-  // We only care about "high priority" issues...
-  reportLevel = "high"
-}
-
-// disable spotbugsTests which checks our test code..
-spotbugsTest.enabled = false
-
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-  reports {
-    xml.enabled = false
-    html.enabled = true
-  }
-}
-
-
-
 task deleteGeneratedFiles(type: Delete) {
   delete 'activemq-data'
   delete 'data'
