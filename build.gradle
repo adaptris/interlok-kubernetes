@@ -1,9 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '4.5.0' apply false
-  id "io.freefair.lombok" version "5.1.1" apply false
-  id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
+  id 'com.github.spotbugs' version '4.5.1' apply false
+  id "io.freefair.lombok" version "5.3.0" apply false
+  id 'org.owasp.dependencycheck' version '6.0.3' apply false
 }
 
 ext {
@@ -22,7 +22,7 @@ ext {
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.30'
-  junitJupiterVersion = '5.6.2'
+  junitJupiterVersion = '5.7.0'
   jGroupsVersion = '4.0.16.Final'
   prometheusVersion = '0.9.0'
 
@@ -127,7 +127,7 @@ subprojects {
     testCompile  ("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testCompile  ("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testCompile ("org.mockito:mockito-all:1.10.19")
-    testCompile ('junit:junit:4.13')
+    testCompile ('junit:junit:4.13.1')
     testCompile "org.slf4j:slf4j-simple:$slf4jVersion"
     // exclude any log4j dependencies so that we can just use slf4j simple.
     // works around INTERLOk-3233
