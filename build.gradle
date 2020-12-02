@@ -24,8 +24,6 @@ ext {
   slf4jVersion = '1.7.30'
   junitJupiterVersion = '5.7.0'
   jGroupsVersion = '4.0.16.Final'
-  prometheusVersion = '0.9.0'
-
 }
 
 ext.hasGraphViz = { ->
