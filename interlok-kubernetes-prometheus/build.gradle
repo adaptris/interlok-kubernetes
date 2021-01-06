@@ -56,6 +56,8 @@ publishing {
         properties.appendNode("target", "3.9.1+")
         properties.appendNode("license", "false")
         properties.appendNode("tags", "prometheus,kubernetes,metrics,management")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok-kubernetes")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok-kubernetes/raw/develop/README.md")
       }
     }
   }
