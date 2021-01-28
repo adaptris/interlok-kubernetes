@@ -7,8 +7,8 @@ plugins {
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.12-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.12-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.0-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.0-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -27,13 +27,14 @@ ext {
 }
 
 ext.hasGraphViz = { ->
-  def app = "dot"
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    app = app + ".exe"
-  }
-  return System.getenv("PATH").split(File.pathSeparator).any{
-    java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
-  }
+//  def app = "dot"
+//  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+//    app = app + ".exe"
+//  }
+//  return System.getenv("PATH").split(File.pathSeparator).any{
+//    java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
+//  }
+  return false
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -75,8 +76,8 @@ subprojects {
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.owasp.dependencycheck'
 
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+  sourceCompatibility = JavaVersion.VERSION_11
+  targetCompatibility = JavaVersion.VERSION_11
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
@@ -190,7 +191,6 @@ subprojects {
     }
   }
 
-
   task offlinePackageList(type: Copy) {
     description 'Build an offline package-list for javadocs'
     group 'Documentation'
@@ -201,6 +201,7 @@ subprojects {
       }
     }
     include "package-list"
+    include "element-list"
     into offlineJavadocPackageDir
   }
 
@@ -219,6 +220,7 @@ subprojects {
       options.linksOffline(interlokApacheHttpJavadocs, offlineJavadocPackageDir.getCanonicalPath() + "/interlok-apache-http-$interlokCoreVersion-javadoc.jar")
       taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
       options.addStringOption "tagletpath", configurations.javadoc.asPath
+      options.addBooleanOption "-no-module-directories", true
       options.docletpath = configurations.umlDoclet.files.asType(List)
       options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
       options.addStringOption "umlBasePath", destinationDir.getCanonicalPath()
@@ -238,7 +240,6 @@ subprojects {
       options.addStringOption "umlIncludeProtectedInnerClasses","false"
     }
   }
-
 
   spotbugsMain {
     effort = "max"
