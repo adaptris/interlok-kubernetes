@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+    <notes><![CDATA[
+	Get confused between interlok-kubernetes-metrics 3.12 and kubernetes
+    file name: interlok-kubernetes-metrics-3.12-SNAPSHOT.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.adaptris/interlok\-kubernetes\-metrics@.*$</packageUrl>
+    <cpe>cpe:/a:kubernetes:kubernetes</cpe>
+  </suppress>
+</suppressions>
