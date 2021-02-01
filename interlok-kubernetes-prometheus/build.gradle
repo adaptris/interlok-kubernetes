@@ -1,7 +1,7 @@
 ext {
   componentName='Interlok/Kubernetes Auto-Scaling'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  prometheusVersion = '0.9.0'
+  prometheusVersion = '0.10.0'
 }
 
 dependencies {
