@@ -22,7 +22,7 @@ ext {
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.30'
-  junitJupiterVersion = '5.7.0'
+  junitJupiterVersion = '5.7.1'
   jGroupsVersion = '4.0.16.Final'
 }
 
