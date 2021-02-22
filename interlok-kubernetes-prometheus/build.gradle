@@ -1,5 +1,6 @@
 ext {
-  componentName='Interlok/Kubernetes Auto-Scaling'
+  componentName='Interlok Kubernetes/Prometheus pushgateway'
+  componentDesc="Pushes metrics into Prometheus via pushgateway"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   prometheusVersion = '0.10.0'
 }
@@ -50,7 +51,7 @@ publishing {
 
       pom.withXml {
         asNode().appendNode("name", componentName)
-        asNode().appendNode("description", "Management component for exposing metrics to Prometheus in Kuberenetes.")
+        asNode().appendNode("description", componentDesc)
         asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/advanced/advanced-interlok-scaling")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.9.1+")
@@ -58,6 +59,8 @@ publishing {
         properties.appendNode("tags", "prometheus,kubernetes,metrics,management")
         properties.appendNode("repository", "https://github.com/adaptris/interlok-kubernetes")
         properties.appendNode("readme", "https://github.com/adaptris/interlok-kubernetes/raw/develop/README.md")
+        properties.appendNode("deprecated", "Pushgateway is not the preferred way to get metrics into Kubernetes")
+
       }
     }
   }

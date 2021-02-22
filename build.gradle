@@ -182,6 +182,7 @@ subprojects {
       versionFile.getParentFile().mkdirs()
       ant.propertyfile(file: versionFile) {
         entry(key: 'component.name', value: componentName)
+        entry(key: 'component.description', value: componentDesc)
         entry(key: 'build.version', value: releaseVersion)
         entry(key: 'groupId', value: project.group)
         entry(key: 'artifactId', value: project.name)
